@@ -1,14 +1,36 @@
-version: '3.8'
-services: 
-  dev-db:
-    image: postgres:13
-    ports: 
-      - 5432:5432
+services:
+  db:
+    image: postgres:latest
+    container_name: db-container
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: budget_db
-    networks:
-      - nestconnect
-networks:
-  nestconnect:
+      POSTGRES_DB: nest-db
+      POSTGRES_USER: nest
+      POSTGRES_PASSWORD: nest
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -q -d nest-db -U nest"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: ./
+      target: development
+    container_name: backend-container
+    depends_on:
+      db: 
+        condition: service_healthy
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgres://nest:nest@db:5432/nest-db
+    command: npm run start-dev:migrate-reset
+    volumes:
+      - ./src:/app/src
+
+volumes:
+  postgres_data:
