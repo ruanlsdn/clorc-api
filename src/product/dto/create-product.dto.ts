@@ -13,7 +13,13 @@ export class CreateProductDto {
   price: number;
 
   @ApiProperty()
+  countable: boolean;
+
+  @ApiProperty()
+  number: number;
+
+  @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  user_id: string;
+  userId: string;
 }
