@@ -10,13 +10,13 @@ export class ProductService {
 
   async create(data: CreateProductDto) {
     return await this.prisma.product.create({
-      data,
+      data
     });
   }
 
   async findAll(userId: string) {
     return await this.prisma.product.findMany({
-      where: { user_id: userId },
+      where: { userId },
       orderBy: { description: Prisma.SortOrder.asc },
     });
   }
@@ -37,6 +37,6 @@ export class ProductService {
   }
 
   async removeMany(userId: string) {
-    return await this.prisma.product.deleteMany({ where: { user_id: userId } });
+    return await this.prisma.product.deleteMany({ where: { userId } });
   }
 }
