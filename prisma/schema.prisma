@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl"]
 }
 
@@ -12,20 +12,41 @@ datasource db {
 }
 
 model User {
-  id         String    @id @default(uuid())
-  name       String
-  password   String
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  products   Product[]
+  id        String    @id @default(uuid())
+  name      String
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Product {
   id          String   @id @default(uuid())
   description String
   price       Float
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  user        User?    @relation(fields: [user_id], references: [id])
-  user_id     String?
+  countable   Boolean  @default(false)
+  number      Int?     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+  orders      Order[]
+}
+
+model Card {
+  id         String   @id @default(uuid())
+  clientName String?
+  checked    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  orders     Order[]
+}
+
+model Order {
+  id        String  @id @default(uuid())
+  number    Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId String // relation scalar field (used in the `@relation` attribute above)
+  card      Card    @relation(fields: [cardId], references: [id])
+  cardId    String // relation scalar field (used in the `@relation` attribute above)
 }
