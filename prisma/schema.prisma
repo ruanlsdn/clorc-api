@@ -18,6 +18,7 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products  Product[]
+  cards     Card[]
 }
 
 model Product {
@@ -25,11 +26,11 @@ model Product {
   description String
   price       Float
   countable   Boolean  @default(false)
-  number      Int?     @default(0)
+  quantity    Int?     @default(0)
+  userId      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  user        User?    @relation(fields: [userId], references: [id])
-  userId      String?
+  user        User     @relation(fields: [userId], references: [id])
   orders      Order[]
 }
 
@@ -37,16 +38,21 @@ model Card {
   id         String   @id @default(uuid())
   clientName String?
   checked    Boolean  @default(false)
+  userId     String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  User       User     @relation(fields: [userId], references: [id])
   orders     Order[]
 }
 
 model Order {
-  id        String  @id @default(uuid())
-  number    Int
-  product   Product @relation(fields: [productId], references: [id])
-  productId String // relation scalar field (used in the `@relation` attribute above)
-  card      Card    @relation(fields: [cardId], references: [id])
-  cardId    String // relation scalar field (used in the `@relation` attribute above)
+  id              String   @id @default(uuid())
+  cardId          String // relation scalar field (used in the `@relation` attribute above)
+  productId       String // relation scalar field (used in the `@relation` attribute above)
+  productPrice    Float
+  productQuantity Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  card            Card     @relation(fields: [cardId], references: [id], onDelete: Restrict)
+  product         Product  @relation(fields: [productId], references: [id])
 }
