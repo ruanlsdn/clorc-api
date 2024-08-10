@@ -6,6 +6,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('/api/v1');
+  
   const config = new DocumentBuilder()
     .setTitle('BUDGET API')
     .setDescription('API para o aplicativo Budget')
@@ -15,7 +17,9 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, skipMissingProperties: true }),
+  );
 
   await app.listen(3000);
 }

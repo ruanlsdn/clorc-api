@@ -5,7 +5,7 @@ import { User } from '@prisma/client';
 import { UserDecorator } from './decorators/user.decorator';
 
 @ApiTags('Auth')
-@Controller('api/v1/')
+@Controller('auth')
 export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')

@@ -13,7 +13,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Product')
-@Controller('api/v1/product')
+@Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
