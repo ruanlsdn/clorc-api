@@ -13,8 +13,9 @@ datasource db {
 
 model User {
   id        String    @id @default(uuid())
-  name      String
+  login     String
   password  String
+  name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products  Product[]
@@ -25,7 +26,7 @@ model Product {
   id          String   @id @default(uuid())
   description String
   price       Float
-  countable   Boolean  @default(false)
+  countable   Boolean?
   quantity    Int?     @default(0)
   userId      String
   createdAt   DateTime @default(now())
