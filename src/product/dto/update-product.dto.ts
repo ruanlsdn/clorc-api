@@ -5,9 +5,9 @@ import { IsBoolean, IsNumber } from 'class-validator';
 export class UpdateProductDto extends PartialType(CreateProductDto) {
   @ApiProperty()
   @IsBoolean()
-  countable: boolean;
+  countable?: boolean;
 
   @ApiProperty()
   @IsNumber()
-  quantity: number;
+  quantity?: number;
 }

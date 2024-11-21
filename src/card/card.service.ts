@@ -3,12 +3,14 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardStatusDto } from './dto/update-card-status.dto';
 import { OrderService } from '../order/order.service';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class CardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly orderService: OrderService,
+    private readonly productService: ProductService,
   ) {}
 
   async create(data: CreateCardDto) {
@@ -22,11 +24,34 @@ export class CardService {
   }
 
   async updateCardStatus(id: string, data: UpdateCardStatusDto) {
-    return await this.prisma.card.update({ where: { id }, data });
+    const updatedCard = await this.prisma.card.update({ where: { id }, data });
+  
+    if (data.checked) {
+      await this.productService.updateProductsFromCard(await this.findUnique(updatedCard.id));
+    }
+
+    return updatedCard;
   }
 
   async findByUserId(userId: string) {
-    return await this.prisma.card.findMany({ where: { userId } });
+    return await this.prisma.card.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        clientName: true,
+        checked: true,
+        orders: {
+          select: {
+            productQuantity: true,
+            productPrice: true,
+            product: { select: { id: true, description: true } },
+          },
+          orderBy: { productQuantity: 'desc' },
+        },
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
   async findUnique(id: string) {
@@ -40,7 +65,7 @@ export class CardService {
           select: {
             productQuantity: true,
             productPrice: true,
-            product: { select: { description: true } },
+            product: { select: { id: true, description: true } },
           },
           orderBy: { productQuantity: 'desc' },
         },
