@@ -1,8 +1,16 @@
-import { Body, Controller, Get, Param, Patch, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { CardService } from './card.service';
 import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardStatusDto } from './dto/update-card-status.dto';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Card')
 @Controller('card')
@@ -17,6 +25,15 @@ export class CardController {
   @Get('/user/:userId')
   async findByUserId(@Param('userId') userId: string) {
     return await this.cardService.findByUserId(userId);
+  }
+
+  @Get('/user/:userId/period')
+  async findByPeriod(
+    @Param('userId') userId: string,
+    @Query('initialDate') initialDate: Date,
+    @Query('finalDate') finalDate: Date,
+  ) {
+    return await this.cardService.findByPeriod(userId, initialDate, finalDate);
   }
 
   @Get(':id')
