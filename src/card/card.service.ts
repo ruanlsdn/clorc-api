@@ -27,7 +27,9 @@ export class CardService {
     const updatedCard = await this.prisma.card.update({ where: { id }, data });
 
     if (data.checked) {
-      await this.productService.updateProductsFromCard(await this.findUnique(updatedCard.id));
+      await this.productService.updateProductsFromCard(
+        await this.findUnique(updatedCard.id),
+      );
     }
 
     return updatedCard;
@@ -58,6 +60,7 @@ export class CardService {
     return await this.prisma.card.findMany({
       where: {
         userId,
+        checked: true,
         AND: {
           createdAt: { gte: initialDate },
           AND: { createdAt: { lte: finalDate } },
