@@ -26,8 +26,8 @@ model Product {
   id          String   @id @default(uuid())
   description String
   price       Float
-  countable   Boolean?
-  quantity    Int?     @default(0)
+  countable   Boolean  @default(false)
+  quantity    Int      @default(0)
   userId      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -38,7 +38,7 @@ model Product {
 model Card {
   id         String   @id @default(uuid())
   clientName String?
-  checked    Boolean  @default(false)
+  checked    Boolean?
   userId     String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
