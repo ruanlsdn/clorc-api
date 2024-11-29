@@ -1,51 +1,83 @@
-# -------- DEVELOPMENT ---------- 
+# -------- DEVELOPMENT ----------
+# Usando a imagem base do Node.js versão 18 com Alpine Linux para otimização de tamanho
 FROM node:18-alpine AS development
 
-# Create app directory
+# Instalando dependências necessárias para o pdf2pic (Ghostscript, GraphicsMagick e ImageMagick)
+# Essas ferramentas são necessárias para a conversão de PDF para imagem
+RUN apk add --no-cache \
+    ghostscript \ 
+    graphicsmagick \ 
+    imagemagick  \
+    && mkdir -p /app/output
+
+# Definindo o diretório de trabalho do contêiner
 WORKDIR /app
 
+# Copiando o arquivo de dependências (package.json e package-lock.json) para dentro do contêiner
 COPY package*.json ./
 
+# Copiando a pasta Prisma (caso esteja utilizando o Prisma no projeto)
 COPY prisma /prisma/
 
+# Instalando as dependências do Node.js usando o comando npm ci
 RUN npm ci
 
+# Copiando todos os arquivos da aplicação para dentro do contêiner
 COPY . .
 
+# Rodando o comando do Prisma para gerar os arquivos necessários
 RUN npm run prisma:generate
 
+# Expondo a porta 3000, que é a padrão para aplicações NestJS
 EXPOSE 3000
 # -------- END ---------- 
 
-# -------- BUILD ---------- 
+# -------- BUILD ----------
+# Usando novamente a imagem do Node.js para a etapa de build
 FROM node:18-alpine AS build
 
+# Definindo o diretório de trabalho
 WORKDIR /app
 
+# Copiando novamente o package.json e package-lock.json
 COPY package*.json ./
 
-# In order to run `npm run build` we need access to the Nest CLI which is a dev dependency. In the previous development stage we ran `npm ci` which installed all dependencies, so we can copy over the node_modules directory from the development image
+# Copiando o diretório node_modules da etapa de desenvolvimento para evitar reinstalar todas as dependências
 COPY --from=development /app/node_modules ./node_modules
 
+# Copiando os arquivos restantes da aplicação para o contêiner
 COPY . .
 
-# Run the build command which creates the production bundle
+# Rodando o comando de build do NestJS para gerar o bundle de produção
 RUN npm run build
 
-# Set NODE_ENV environment variable
+# Definindo a variável de ambiente NODE_ENV como produção para otimizar a aplicação
 ENV NODE_ENV production
 
-# Running `npm ci` removes the existing node_modules directory and pASsing in --omit=dev ensures that only the production dependencies are installed. This ensures that the node_modules directory is AS optimized AS possible
+# Rodando novamente npm ci com a opção --omit=dev para garantir que apenas as dependências de produção sejam instaladas
+# Isso também remove pacotes de desenvolvimento que não são necessários no ambiente de produção
 RUN npm ci --omit=dev && npm cache clean --force
 # -------- END ---------- 
 
-# -------- PRODUCTION ---------- 
+# -------- PRODUCTION ----------
+# Imagem final de produção
+# Usando a imagem Node.js para rodar o app no ambiente de produção
 FROM node:18-alpine AS production
 
+# Instalando novamente as dependências necessárias para o pdf2pic, pois a conversão ocorrerá no ambiente de produção
+RUN apk add --no-cache \
+    ghostscript \ 
+    graphicsmagick \ 
+    imagemagick  \
+    && mkdir -p /app/output
+
+# Definindo o diretório de trabalho para a produção
 WORKDIR /app
 
+# Copiando as dependências (node_modules) e os arquivos do build para a imagem de produção
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 
+# Definindo o comando que irá iniciar a aplicação NestJS
 CMD [ "node", "dist/main.js" ]
-# -------- END ---------- 
+# -------- END ----------
