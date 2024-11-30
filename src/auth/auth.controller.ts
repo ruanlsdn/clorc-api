@@ -9,7 +9,7 @@ import { UserDecorator } from './decorators/user.decorator';
 export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
-  create(@UserDecorator() user: User) {
+  login(@UserDecorator() user: User) {
     return user;
   }
 }

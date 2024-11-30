@@ -21,9 +21,9 @@ export class UserService {
     return await this.prisma.user.findMany({});
   }
 
-  async findOne(name: string) {
+  async findOne(login: string) {
     return await this.prisma.user.findFirstOrThrow({
-      where: { name },
+      where: { login },
     });
   }
 

@@ -7,18 +7,17 @@ import { compareSync } from 'bcrypt';
 export class AuthService {
   constructor(private readonly userService: UserService) {}
 
-  async validate(name: string, password: string) {
+  async validate(login: string, password: string) {
     let user: User;
 
     try {
-      user = await this.userService.findOne(name);
+      user = await this.userService.findOne(login);
     } catch (error) {
       return null;
     }
 
     const isPasswordValid = compareSync(password, user.password);
     if (!isPasswordValid) return null;
-
     return user;
   }
 }
