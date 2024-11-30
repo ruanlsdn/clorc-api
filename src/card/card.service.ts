@@ -103,4 +103,18 @@ export class CardService {
       },
     });
   }
+
+  async deleteRejectedCards() {
+    console.log(`Iniciando exclusão das comandas rejeitadas...`);
+
+    const response = await this.prisma.card.deleteMany({
+      where: { checked: false },
+    });
+
+    console.log(
+      `Foram excluídas ${
+        response.count
+      } comandas em ${new Date().toLocaleString('pt-br')}.`,
+    );
+  }
 }

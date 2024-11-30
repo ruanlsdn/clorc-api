@@ -6,6 +6,7 @@ import { CardService } from './card.service';
 
 @Module({
   imports: [OrderModule, ProductModule],
+  exports: [CardService],
   controllers: [CardController],
   providers: [CardService],
 })
