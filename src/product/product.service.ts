@@ -48,16 +48,18 @@ export class ProductService {
     return await this.prisma.product.deleteMany({ where: { userId } });
   }
 
-  async updateProductsFromCard(selectedCard: CardDto) {
+  async updateProductQuantityFromCard(selectedCard: CardDto) {
     const updatedProducts = [];
 
     for (const order of selectedCard.orders) {
       const currentProduct = await this.findOne(order.product.id);
-      updatedProducts.push(
-        await this.update(currentProduct.id, {
-          quantity: currentProduct.quantity - order.productQuantity,
-        }),
-      );
+      if (currentProduct.countable) {
+        updatedProducts.push(
+          await this.update(currentProduct.id, {
+            quantity: currentProduct.quantity - order.productQuantity,
+          }),
+        );
+      }
     }
 
     return updatedProducts;

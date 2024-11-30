@@ -27,7 +27,7 @@ export class CardService {
     const updatedCard = await this.prisma.card.update({ where: { id }, data });
 
     if (data.checked) {
-      await this.productService.updateProductsFromCard(
+      await this.productService.updateProductQuantityFromCard(
         await this.findUnique(updatedCard.id),
       );
     }
