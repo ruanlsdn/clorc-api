@@ -8,6 +8,10 @@ export class CreateCardDto {
   clientName: string;
 
   @ApiProperty()
+  @IsString()
+  clientAddress: string;
+
+  @ApiProperty()
   @IsNotEmpty()
   products: CardProductDto[];
 

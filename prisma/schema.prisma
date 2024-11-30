@@ -14,7 +14,7 @@ datasource db {
 model User {
   id        String    @id @default(uuid())
   name      String
-  login     String
+  login     String    @unique
   password  String
   active    Boolean   @default(true)
   createdAt DateTime  @default(now())
@@ -38,14 +38,15 @@ model Product {
 }
 
 model Card {
-  id         String   @id @default(uuid())
-  clientName String?
-  checked    Boolean?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  userId     String
-  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders     Order[]
+  id            String   @id @default(uuid())
+  clientName    String?
+  clientAddress String?
+  checked       Boolean?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  userId        String
+  User          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        Order[]
 }
 
 model Order {

@@ -15,7 +15,11 @@ export class CardService {
 
   async create(data: CreateCardDto) {
     const createdCard = await this.prisma.card.create({
-      data: { clientName: data.clientName, userId: data.userId },
+      data: {
+        clientName: data.clientName,
+        clientAddress: data.clientAddress,
+        userId: data.userId,
+      },
     });
 
     this.orderService.create(createdCard.id, data.products);
@@ -41,6 +45,7 @@ export class CardService {
       select: {
         id: true,
         clientName: true,
+        clientAddress: true,
         checked: true,
         orders: {
           select: {
@@ -69,6 +74,7 @@ export class CardService {
       select: {
         id: true,
         clientName: true,
+        clientAddress: true,
         checked: true,
         orders: {
           select: {
@@ -90,6 +96,7 @@ export class CardService {
       select: {
         id: true,
         clientName: true,
+        clientAddress: true,
         checked: true,
         orders: {
           select: {
