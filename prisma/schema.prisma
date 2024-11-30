@@ -13,9 +13,10 @@ datasource db {
 
 model User {
   id        String    @id @default(uuid())
+  name      String
   login     String
   password  String
-  name      String
+  active    Boolean   @default(true)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   products  Product[]
@@ -56,5 +57,5 @@ model Order {
   cardId          String // relation scalar field (used in the `@relation` attribute above)
   productId       String // relation scalar field (used in the `@relation` attribute above)
   card            Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  product         Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product         Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
