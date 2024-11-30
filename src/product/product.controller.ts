@@ -35,10 +35,15 @@ export class ProductController {
     return await this.productService.update(id, updateProductDto);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: string) {
-    return await this.productService.remove(id);
+  @Patch('/virtual-delete/:id')
+  async virtualRemove(@Param('id') id: string) {
+    return await this.productService.virtualRemove(id);
   }
+
+  // @Delete(':id')
+  // async remove(@Param('id') id: string) {
+  //   return await this.productService.remove(id);
+  // }
 
   // @Delete('/remove-many/:userId')
   // async removeMany(@Param('userId') userId: string) {

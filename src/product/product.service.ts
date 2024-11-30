@@ -17,7 +17,7 @@ export class ProductService {
 
   async findAll(userId: string) {
     return await this.prisma.product.findMany({
-      where: { userId },
+      where: { userId, active: true },
       orderBy: { description: Prisma.SortOrder.asc },
     });
   }
@@ -30,6 +30,13 @@ export class ProductService {
     return await this.prisma.product.update({
       where: { id },
       data,
+    });
+  }
+
+  async virtualRemove(id: string) {
+    return await this.prisma.product.update({
+      where: { id },
+      data: { active: false },
     });
   }
 

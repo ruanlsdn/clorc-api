@@ -8,6 +8,10 @@ export class UpdateProductDto extends PartialType(CreateProductDto) {
   countable?: boolean;
 
   @ApiProperty()
+  @IsBoolean()
+  active?: boolean;
+
+  @ApiProperty()
   @IsNumber()
   quantity?: number;
 }
