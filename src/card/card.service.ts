@@ -4,6 +4,7 @@ import { CreateCardDto } from './dto/create-card.dto';
 import { UpdateCardStatusDto } from './dto/update-card-status.dto';
 import { OrderService } from '../order/order.service';
 import { ProductService } from '../product/product.service';
+import { PaginationDto, PaginatedResponseDto } from '../common/dto';
 
 @Injectable()
 export class CardService {
@@ -123,5 +124,48 @@ export class CardService {
         response.count
       } comandas em ${new Date().toLocaleString('pt-br')}.`,
     );
+  }
+
+  async findByUserIdPaginated(userId: string, paginationDto: PaginationDto) {
+    const { page = 1, limit = 20, search } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    const whereClause: any = { userId };
+    
+    if (search) {
+      whereClause.clientName = {
+        contains: search,
+        mode: 'insensitive' as const,
+      };
+    }
+
+    const [cards, total] = await Promise.all([
+      this.prisma.card.findMany({
+        where: whereClause,
+        select: {
+          id: true,
+          clientName: true,
+          clientAddress: true,
+          checked: true,
+          orders: {
+            select: {
+              productQuantity: true,
+              productPrice: true,
+              product: { select: { id: true, description: true } },
+            },
+            orderBy: { productQuantity: 'desc' },
+          },
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+      }),
+      this.prisma.card.count({
+        where: whereClause,
+      }),
+    ]);
+
+    return new PaginatedResponseDto(cards, total, page, limit);
   }
 }
