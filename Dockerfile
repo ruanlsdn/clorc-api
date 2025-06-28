@@ -7,7 +7,9 @@ FROM node:18-alpine AS development
 RUN apk add --no-cache \
     ghostscript \ 
     graphicsmagick \ 
-    imagemagick  \
+    imagemagick \
+    openssl \
+    libc6-compat \
     && mkdir -p /app/output
 
 # Definindo o diretório de trabalho do contêiner
@@ -81,8 +83,6 @@ COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/prisma ./prisma
 
-# Gerando o cliente Prisma para produção
-RUN npx prisma generate
 
 # Definindo o comando que irá iniciar a aplicação NestJS
 CMD [ "node", "dist/main.js" ]
