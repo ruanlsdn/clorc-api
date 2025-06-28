@@ -81,8 +81,6 @@ WORKDIR /app
 # Copiando as dependências (node_modules) e os arquivos do build para a imagem de produção
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
-COPY --from=build /app/prisma ./prisma
-
 
 # Definindo o comando que irá iniciar a aplicação NestJS
 CMD [ "node", "dist/main.js" ]
